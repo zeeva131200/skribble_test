@@ -7,15 +7,21 @@
 
 namespace App;
 
-class Contract {
+//store contract details
+//manage loads
+//update status
+
+class Contract
+{
     public $contractNumber;
     public $product;
     public $quantity;
     public $price;
     public $status;
     private $loads;
-    
-    public function __construct($contractNumber, $product, $quantity, $price) {
+
+    public function __construct($contractNumber, $product, $quantity, $price)
+    {
         $this->contractNumber = $contractNumber;
         $this->product = $product;
         $this->quantity = $quantity;
@@ -23,16 +29,18 @@ class Contract {
         $this->status = 'NEW';
         $this->loads = [];
     }
-    
-    public function addLoad($load){
-        if(!$this->canAddLoad($load)){
-             throw new \Exception("Cannot add load. It exceeds the contract quantity or load ID already exists.");
+
+    public function addLoad($load)
+    {
+        if (!$this->canAddLoad($load)) {
+            throw new \Exception("Cannot add load. It exceeds the contract quantity or load ID already exists.");
         }
         $this->loads[] = $load;
         $this->updateStatus();
     }
-    
-    public function deleteLoad($loadId) {
+
+    public function deleteLoad($loadId)
+    {
         foreach ($this->loads as $index => $load) {
             if ($load->loadId == $loadId) {
                 unset($this->loads[$index]);
@@ -43,88 +51,46 @@ class Contract {
         }
         throw new \Exception("Load with ID $loadId not found.");
     }
-    
-    private function canAddLoad($load) {
-        $totalQuantity = array_sum(array_map(function($l) { return $l->quantity; }, $this->loads));
-        if ($totalQuantity + $load->quantity > $this->quantity) {
-            return false;
-        }
+
+    private function canAddLoad($load)
+    {
+        $totalQuantity = 0;
         foreach ($this->loads as $l) {
+            $totalQuantity += $l->quantity;
             if ($l->loadId === $load->loadId) {
-                return false;
+                return false; //load ID is not unique
             }
         }
-        return true;
-    }
-    
-    private function updateStatus() {
-        $totalQuantity = array_sum(array_map(function($l) { return $l->quantity; }, $this->loads));
-        $this->status = $totalQuantity == $this->quantity ? 'COMPLETED' : 'NEW';
+        if ($totalQuantity + $load->quantity > $this->quantity) {
+            return false; //adding new load will exceed contract qty
+        }
+        return true; //load can be added
     }
 
-    public function copyLoadToAnotherContract($loadId, $targetContract) {
+    private function updateStatus()
+    {
+        $totalQuantity = 0;
+        foreach ($this->loads as $load) {
+            $totalQuantity += $load->quantity;
+        }
+        $this->status = ($totalQuantity == $this->quantity) ? 'COMPLETED' : 'NEW';
+    }
+
+    public function getLoads()
+    {
+        return $this->loads;
+    }
+
+    public function getLoad($loadId)
+    {
         foreach ($this->loads as $load) {
             if ($load->loadId == $loadId) {
-                $targetContract->addLoad(new Load($load->loadId, $load->quantity));
-                return;
+                return $load;
             }
         }
         throw new \Exception("Load with ID $loadId not found.");
     }
-    
-    public function getLoads() {
-    return $this->loads;
 }
-}
-class Load {
-    public $loadId;
-    public $quantity;
-
-    public function __construct($loadId, $quantity) {
-        $this->loadId = $loadId;
-        $this->quantity = $quantity;
-    }
-}
-
-
-class ContractManagement {
-    private $contracts = [];
-
-    public function createContract($contractNumber, $product, $quantity, $price) {
-        if (isset($this->contracts[$contractNumber])) {
-            throw new \Exception("Contract already exists.");
-        }
-        $this->contracts[$contractNumber] = new Contract($contractNumber, $product, $quantity, $price);
-    }
-
-    public function deleteContract($contractNumber) {
-        if (!isset($this->contracts[$contractNumber])) {
-            throw new \Exception("Contract not found.");
-        }
-        if (!empty($this->contracts[$contractNumber]->getLoads())) {
-            throw new \Exception("Cannot delete contract with loads.");
-        }
-        unset($this->contracts[$contractNumber]);
-    }
-
-    public function createLoad($contractNumber, $loadId, $quantity) {
-        if (!isset($this->contracts[$contractNumber])) {
-            throw new \Exception("Contract not found.");
-        }
-        $this->contracts[$contractNumber]->addLoad(new Load($loadId, $quantity));
-    }
-
-    // Methods for deleting loads, copying loads, etc.
-    
-    public function getContracts() {
-    return $this->contracts;
-}
-
-    public function getContract($contractNumber) {
-        return isset($this->contracts[$contractNumber]) ? $this->contracts[$contractNumber] : null;
-}
-}
-
 
 // $cm = new ContractManagement();
 
@@ -156,4 +122,3 @@ class ContractManagement {
 // // Print out all the contract details after deletion
 // echo "<br>Contracts after deleting 456def:<br>";
 // print_r($cm->getContracts());
-?>

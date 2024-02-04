@@ -55,9 +55,9 @@ function findFrequency($str)
     if (count($maxKeys) > 1) {
         if (count($maxKeys) == 2) {
             $notChosenKey = ($maxKeys[0] == $maxKey) ? $maxKeys[1] : $maxKeys[0];
-            echo "\n'" . implode("', '", $maxKeys) . "' occur " . $maxValue . " times each, but the answer is '" . $maxKey . "' because '" . $maxKey . "' is alphabetically bigger than '" . $notChosenKey . "'\n";
+            echo "<br>'" . implode("', '", $maxKeys) . "' occur " . $maxValue . " times each, but the answer is '" . $maxKey . "' because '" . $maxKey . "' is alphabetically bigger than '" . $notChosenKey . "'\n";
         } else {
-            echo "\n'" . implode("', '", $maxKeys) . "' occur " . $maxValue . " times each, but the answer is '" . $maxKey . "' because '" . $maxKey . "' is alphabetically bigger than the rest \n";
+            echo "<br>'" . implode("', '", $maxKeys) . "' occur " . $maxValue . " times each, but the answer is '" . $maxKey . "' because '" . $maxKey . "' is alphabetically bigger than the rest \n";
         }
     } else {
         echo "', because '" . $maxKey . "' occurs " . $maxValue . " times.\n";
@@ -67,16 +67,16 @@ function findFrequency($str)
     if (count($minKeys) > 1) {
         if (count($minKeys) == 2) {
             $notChosenKey = ($minKeys[0] == $minKey) ? $minKeys[1] : $minKeys[0];
-            echo "\n'" . implode("', '", $minKeys) . "' occur " . $minValue . " times each, but the answer is '" . $minKey . "' because '" . $minKey . "' is alphabetically bigger than '" . $notChosenKey . "'.\n";
+            echo "<br>'" . implode("', '", $minKeys) . "' occur " . $minValue . " times each, but the answer is '" . $minKey . "' because '" . $minKey . "' is alphabetically bigger than '" . $notChosenKey . "'.\n";
         } else {
-            echo "\n'" . implode("', '", $minKeys) . "' occur " . $minValue . " times each, but the answer is '" . $minKey . "' because '" . $minKey . "' is alphabetically bigger than the rest. \n";
+            echo "<br>'" . implode("', '", $minKeys) . "' occur " . $minValue . " times each, but the answer is '" . $minKey . "' because '" . $minKey . "' is alphabetically bigger than the rest. \n";
         }
     } else {
         echo "', because '" . $minKey . "' occurs " . $minValue . " times.\n";
     }
 }
 
-//$str = "embezzlement";
-$str = "aabb";
+$str = "embezzlement";
+//$str = "aabb";
 findFrequency($str);
 ?>
